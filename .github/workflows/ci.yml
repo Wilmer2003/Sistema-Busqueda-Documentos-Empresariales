@@ -1,0 +1,106 @@
+name: CI - Validacion del Proyecto
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  backend-checks:
+    name: backend-checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar codigo
+        uses: actions/checkout@v4
+
+      - name: Verificar si existe proyecto Python en backend
+        id: check_backend
+        run: |
+          if [ -f "backend/requirements.txt" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Aviso: backend/requirements.txt aun no existe. Saltando pruebas."
+          fi
+
+      - name: Configurar Python
+        if: steps.check_backend.outputs.exists == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependencias
+        if: steps.check_backend.outputs.exists == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          pip install ruff pytest
+
+      - name: Revisar calidad
+        if: steps.check_backend.outputs.exists == 'true'
+        run: ruff check backend
+
+      - name: Ejecutar pruebas
+        if: steps.check_backend.outputs.exists == 'true'
+        run: |
+          if [ -d "backend/tests" ]; then
+            pytest backend/tests
+          else
+            echo "Aviso: carpeta backend/tests aun no existe. Saltando pruebas."
+          fi
+
+  frontend-checks:
+    name: frontend-checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar codigo
+        uses: actions/checkout@v4
+
+      - name: Verificar si existe proyecto Node en frontend
+        id: check_frontend
+        run: |
+          if [ -f "frontend/package.json" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Aviso: frontend/package.json aun no existe. Saltando pruebas."
+          fi
+
+      - name: Configurar Node
+        if: steps.check_frontend.outputs.exists == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Instalar dependencias
+        if: steps.check_frontend.outputs.exists == 'true'
+        working-directory: frontend
+        run: |
+          if [ -f "package-lock.json" ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Revisar calidad
+        if: steps.check_frontend.outputs.exists == 'true'
+        working-directory: frontend
+        run: npm run lint --if-present
+
+      - name: Ejecutar pruebas
+        if: steps.check_frontend.outputs.exists == 'true'
+        working-directory: frontend
+        run: npm run test --if-present -- --run
+
+      - name: Compilar frontend
+        if: steps.check_frontend.outputs.exists == 'true'
+        working-directory: frontend
+        run: npm run build --if-present
