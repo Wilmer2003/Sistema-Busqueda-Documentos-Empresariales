@@ -1,0 +1,34 @@
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  },
+  "mappings": {
+    "properties": {
+      "titulo": {
+        "type": "text",
+        "analyzer": "spanish",
+        "fields": { "keyword": { "type": "keyword" } }
+      },
+      "contenido": {
+        "type": "text",
+        "analyzer": "spanish"
+      },
+      "resumen": {
+        "type": "text",
+        "analyzer": "spanish"
+      },
+      "departamento": { "type": "keyword" },
+      "categoria": { "type": "keyword" },
+      "responsable": {
+        "type": "text",
+        "fields": { "keyword": { "type": "keyword" } }
+      },
+      "tipo_documento": { "type": "keyword" },
+      "etiquetas": { "type": "keyword" },
+      "version": { "type": "integer" },
+      "fecha_creacion": { "type": "date" },
+      "fecha_modificacion": { "type": "date" }
+    }
+  }
+}
