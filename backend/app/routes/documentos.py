@@ -14,21 +14,31 @@ router = APIRouter(prefix="/api/v1/documentos", tags=["Documentos"])
 
 @router.post("", response_model=DocumentoOut, status_code=status.HTTP_201_CREATED)
 def registrar(documento: DocumentoCreate):
-    return service.crear(documento.model_dump(mode="json"))
+    return service.crear(documento.model_dump(mode="json", exclude_none=True))
 
 
 @router.get("/buscar", response_model=BusquedaOut)
 def buscar(
     q: str | None = None,
     categoria: str | None = None,
+    departamento: str | None = None,
     responsable: str | None = None,
+    tipo_documento: str | None = None,
     fecha_desde: date | None = None,
     fecha_hasta: date | None = None,
     pagina: int = Query(1, ge=1),
     tamano: int = Query(10, ge=1, le=100),
 ):
     return service.buscar(
-        q, categoria, responsable, fecha_desde, fecha_hasta, pagina, tamano
+        q=q,
+        categoria=categoria,
+        departamento=departamento,
+        responsable=responsable,
+        tipo_documento=tipo_documento,
+        fecha_desde=fecha_desde,
+        fecha_hasta=fecha_hasta,
+        pagina=pagina,
+        tamano=tamano,
     )
 
 

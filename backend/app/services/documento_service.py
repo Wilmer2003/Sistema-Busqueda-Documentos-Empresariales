@@ -13,6 +13,8 @@ def _a_salida(hit: dict) -> dict:
 
 
 def crear(data: dict) -> dict:
+    if not data.get("fecha_modificacion"):
+        data["fecha_modificacion"] = data["fecha_creacion"]
     resp = es_client.index(index=INDEX, document=data, refresh="wait_for")
     return {"id": resp["_id"], **data}
 
@@ -26,6 +28,7 @@ def obtener(doc_id: str) -> dict | None:
 
 
 def actualizar(doc_id: str, cambios: dict) -> dict | None:
+    cambios["fecha_modificacion"] = date.today().isoformat()
     try:
         es_client.update(index=INDEX, id=doc_id, doc=cambios, refresh="wait_for")
     except NotFoundError:
@@ -44,7 +47,9 @@ def eliminar(doc_id: str) -> bool:
 def buscar(
     q: str | None,
     categoria: str | None,
+    departamento: str | None,
     responsable: str | None,
+    tipo_documento: str | None,
     fecha_desde: date | None,
     fecha_hasta: date | None,
     pagina: int,
@@ -54,18 +59,24 @@ def buscar(
     filtros = []
 
     if q:
-        must.append({"multi_match": {"query": q, "fields": ["titulo^2", "contenido"]}})
+        must.append(
+            {"multi_match": {"query": q, "fields": ["titulo^2", "resumen", "contenido"]}}
+        )
     if categoria:
         filtros.append({"term": {"categoria": categoria}})
+    if departamento:
+        filtros.append({"term": {"departamento": departamento}})
     if responsable:
-        filtros.append({"term": {"responsable": responsable}})
+        filtros.append({"term": {"responsable.keyword": responsable}})
+    if tipo_documento:
+        filtros.append({"term": {"tipo_documento": tipo_documento}})
     if fecha_desde or fecha_hasta:
         rango = {}
         if fecha_desde:
             rango["gte"] = fecha_desde.isoformat()
         if fecha_hasta:
             rango["lte"] = fecha_hasta.isoformat()
-        filtros.append({"range": {"fecha": rango}})
+        filtros.append({"range": {"fecha_creacion": rango}})
 
     query = {"bool": {"must": must or [{"match_all": {}}], "filter": filtros}}
     resp = es_client.search(

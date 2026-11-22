@@ -10,7 +10,7 @@ DOCUMENTO_VALIDO = {
     "categoria": "Manuales",
     "departamento": "Ventas",
     "responsable": "Luis Perez",
-    "fecha": "2026-01-10",
+    "fecha_creacion": "2026-01-10",
 }
 
 
