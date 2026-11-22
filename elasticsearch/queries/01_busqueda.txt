@@ -1,0 +1,32 @@
+# ============================================================
+# 01_busqueda.txt - Búsquedas por palabras, frases y texto completo
+# Índice: documentos_empresariales
+# Se ejecutan en Kibana > Dev Tools (cada consulta con su botón ▶)
+# ============================================================
+
+# 1) Búsqueda por palabra en el título
+GET /documentos_empresariales/_search
+{
+  "query": {
+    "match": { "titulo": "contrato" }
+  }
+}
+
+# 2) Búsqueda por frase exacta en el contenido
+GET /documentos_empresariales/_search
+{
+  "query": {
+    "match_phrase": { "contenido": "primer trimestre" }
+  }
+}
+
+# 3) Búsqueda de texto completo en varios campos (el título pesa el doble)
+GET /documentos_empresariales/_search
+{
+  "query": {
+    "multi_match": {
+      "query": "informe trimestre",
+      "fields": ["titulo^2", "contenido", "resumen"]
+    }
+  }
+}
