@@ -1,0 +1,11 @@
+{
+  "query": {
+    "match": {
+      "contenido": "contrato"
+    }
+  },
+  "highlight": {
+    "fields": { "contenido": {} }
+  },
+  "_source": ["titulo", "resumen", "categoria", "responsable", "fecha_creacion"]
+}

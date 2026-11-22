@@ -1,0 +1,15 @@
+{
+  "query": {
+    "bool": {
+      "should": [
+        { "match_phrase": { "contenido": "orden de compra" } },
+        { "match_phrase": { "titulo": { "query": "orden de compra", "boost": 3 } } }
+      ],
+      "minimum_should_match": 1
+    }
+  },
+  "highlight": {
+    "fields": { "contenido": {}, "titulo": {} }
+  },
+  "_source": ["titulo", "resumen", "categoria", "responsable", "fecha_creacion"]
+}

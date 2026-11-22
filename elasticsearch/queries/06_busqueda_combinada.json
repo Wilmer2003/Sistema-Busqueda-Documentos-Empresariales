@@ -1,0 +1,35 @@
+{
+  "from": 0,
+  "size": 10,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "multi_match": {
+            "query": "presupuesto",
+            "fields": ["titulo^3", "resumen^2", "contenido", "etiquetas"],
+            "fuzziness": "AUTO"
+          }
+        }
+      ],
+      "filter": [
+        { "term": { "departamento": "contabilidad" } },
+        { "term": { "categoria": "finanzas" } },
+        { "term": { "tipo_documento": "informe" } },
+        { "term": { "responsable.keyword": "Juan Perez" } },
+        {
+          "range": {
+            "fecha_creacion": { "gte": "2026-01-01", "lte": "2026-12-31" }
+          }
+        }
+      ]
+    }
+  },
+  "sort": [
+    { "_score": { "order": "desc" } },
+    { "fecha_creacion": { "order": "desc" } }
+  ],
+  "highlight": {
+    "fields": { "titulo": {}, "resumen": {}, "contenido": {} }
+  }
+}
