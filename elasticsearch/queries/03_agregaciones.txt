@@ -1,0 +1,55 @@
+# ============================================================
+# 03_agregaciones.txt - Estadísticas con agregaciones
+# Índice: documentos_empresariales
+# "size": 0 evita traer los documentos y devuelve solo las estadísticas
+# ============================================================
+
+# 1) Cantidad de documentos por departamento
+GET /documentos_empresariales/_search
+{
+  "size": 0,
+  "aggs": {
+    "por_departamento": {
+      "terms": { "field": "departamento" }
+    }
+  }
+}
+
+# 2) Cantidad de documentos por categoría
+GET /documentos_empresariales/_search
+{
+  "size": 0,
+  "aggs": {
+    "por_categoria": {
+      "terms": { "field": "categoria" }
+    }
+  }
+}
+
+# 3) Documentos creados por mes
+GET /documentos_empresariales/_search
+{
+  "size": 0,
+  "aggs": {
+    "por_mes": {
+      "date_histogram": {
+        "field": "fecha_creacion",
+        "calendar_interval": "month"
+      }
+    }
+  }
+}
+
+# 4) Documentos por responsable, con la versión más alta de cada uno
+GET /documentos_empresariales/_search
+{
+  "size": 0,
+  "aggs": {
+    "por_responsable": {
+      "terms": { "field": "responsable.keyword" },
+      "aggs": {
+        "version_maxima": { "max": { "field": "version" } }
+      }
+    }
+  }
+}

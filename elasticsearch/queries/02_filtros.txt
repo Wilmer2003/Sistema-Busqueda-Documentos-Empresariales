@@ -1,0 +1,57 @@
+# ============================================================
+# 02_filtros.txt - Filtros por fecha, categoría, departamento y responsable
+# Índice: documentos_empresariales
+# ============================================================
+
+# 1) Filtro por departamento
+GET /documentos_empresariales/_search
+{
+  "query": {
+    "bool": {
+      "filter": { "term": { "departamento": "Finanzas" } }
+    }
+  }
+}
+
+# 2) Filtro por rango de fechas de creación
+GET /documentos_empresariales/_search
+{
+  "query": {
+    "bool": {
+      "filter": {
+        "range": {
+          "fecha_creacion": { "gte": "2026-01-01", "lte": "2026-03-31" }
+        }
+      }
+    }
+  }
+}
+
+# 3) Filtro por responsable (usa el subcampo keyword para coincidir exacto)
+GET /documentos_empresariales/_search
+{
+  "query": {
+    "bool": {
+      "filter": { "term": { "responsable.keyword": "Ana Torres" } }
+    }
+  }
+}
+
+# 4) Búsqueda de texto + filtros combinados (categoría y fechas)
+GET /documentos_empresariales/_search
+{
+  "query": {
+    "bool": {
+      "must": {
+        "multi_match": {
+          "query": "informe",
+          "fields": ["titulo^2", "contenido", "resumen"]
+        }
+      },
+      "filter": [
+        { "term": { "categoria": "Informe" } },
+        { "range": { "fecha_creacion": { "gte": "2026-01-01" } } }
+      ]
+    }
+  }
+}
