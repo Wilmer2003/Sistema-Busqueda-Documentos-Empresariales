@@ -1,0 +1,14 @@
+{
+  "query": {
+    "multi_match": {
+      "query": "informe financiero",
+      "fields": ["titulo^3", "resumen^2", "contenido", "etiquetas"],
+      "type": "best_fields",
+      "fuzziness": "AUTO"
+    }
+  },
+  "highlight": {
+    "fields": { "titulo": {}, "resumen": {}, "contenido": {} }
+  },
+  "_source": ["titulo", "resumen", "departamento", "categoria", "responsable", "fecha_creacion"]
+}

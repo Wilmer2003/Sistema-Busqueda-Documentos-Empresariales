@@ -1,0 +1,12 @@
+{
+  "query": {
+    "bool": {
+      "filter": [
+        { "term": { "categoria": "finanzas" } },
+        { "term": { "responsable.keyword": "Juan Perez" } }
+      ]
+    }
+  },
+  "sort": [ { "fecha_creacion": { "order": "desc" } } ],
+  "_source": ["titulo", "categoria", "responsable", "fecha_creacion"]
+}

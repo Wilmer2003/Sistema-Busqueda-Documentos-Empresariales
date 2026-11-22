@@ -1,0 +1,18 @@
+{
+  "size": 0,
+  "aggs": {
+    "por_categoria":      { "terms": { "field": "categoria", "size": 10 } },
+    "por_departamento":   { "terms": { "field": "departamento", "size": 10 } },
+    "por_tipo_documento": { "terms": { "field": "tipo_documento", "size": 10 } },
+    "por_responsable":    { "terms": { "field": "responsable.keyword", "size": 10 } },
+    "por_etiqueta":       { "terms": { "field": "etiquetas", "size": 10 } },
+    "documentos_por_mes": {
+      "date_histogram": {
+        "field": "fecha_creacion",
+        "calendar_interval": "month",
+        "format": "yyyy-MM"
+      }
+    },
+    "version_promedio":   { "avg": { "field": "version" } }
+  }
+}
